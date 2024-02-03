@@ -5,7 +5,7 @@ public class MatchesWon {
         HashMap<String,Integer> winnerMap =new HashMap<>();
         for(int id=1; id<=matchesData.size() ;id++){
             String currentWinner=matchesData.get(id).get("winner");
-            int winCount=0;
+            int winCount;
             if(winnerMap.containsKey(currentWinner)){
                 winCount=(winnerMap.get(currentWinner))+1;
                 winnerMap.put(currentWinner,winCount);
@@ -14,7 +14,7 @@ public class MatchesWon {
             }
         }
         for(String key : winnerMap.keySet()){
-            if(!key.equals("")){
+            if(!key.isEmpty()){
                 System.out.println(key+" : "+winnerMap.get(key));
             }
         }

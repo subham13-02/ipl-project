@@ -8,11 +8,9 @@ public class NumberOfMatches {
 
         for(int id=1; id<=matchesData.size() ;id++){
             String currentYear=matchesData.get(id).get("date").substring(0,4);
-            if(year.equals("")){
+            if(year.isEmpty()){
                 year=currentYear;
             }
-//            System.out.println(currentYear+" "+year );
-
             if(currentYear.equals(year)){
                 matchesCount++;
 

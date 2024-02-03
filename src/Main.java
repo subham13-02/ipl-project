@@ -18,14 +18,14 @@ public class Main {
 //            System.out.println("ID " + key + ": " + value);
 //        });
 
-//        Scanner sc=new Scanner(System.in);
-//        int questionNumber=sc.nextInt();
-//        if(questionNumber==1){
-//            NumberOfMatches countMatches= new NumberOfMatches();
-//            countMatches.matchesPlayed(matchesData);
-//        }else if(questionNumber==2){
+        Scanner sc=new Scanner(System.in);
+        int questionNumber=sc.nextInt();
+        if(questionNumber==1){
+            NumberOfMatches countMatches= new NumberOfMatches();
+            countMatches.matchesPlayed(matchesData);
+        }else if(questionNumber==2){
             MatchesWon countWin=new MatchesWon();
             countWin.numberOfMatchesWon(matchesData);
-//        }
+        }
     }
 }

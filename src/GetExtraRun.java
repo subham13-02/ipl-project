@@ -24,7 +24,6 @@ public class GetExtraRun {
                     extraRunMap.put(currentBowlingTeam,extraRunMap.get(currentBowlingTeam)+extraRun);
                 }
             }
-
         }
         extraRunMap.forEach((key, value) -> {
             System.out.println("Extra Runs by " + key + " : " + value);

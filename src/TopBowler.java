@@ -1,4 +1,4 @@
-import java.util.HashMap;
+import java.util.*;
 
 public class TopBowler {
     public TopBowler(HashMap<Integer, HashMap<String,String>> deliveriesData,HashMap<Integer, HashMap<String,String>> matchesData,String year){
@@ -29,8 +29,8 @@ public class TopBowler {
                     }
                     bowlerDetails.put("total_balls",(bowlerDetails.get("total_balls"))+1);
 
-                    int currrent_run=Integer.parseInt(deliveriesData.get(id_outer).get("total_runs"));
-                    bowlerDetails.put("total_runs",(bowlerDetails.get("total_runs"))+currrent_run);
+                    int current_run=Integer.parseInt(deliveriesData.get(id_outer).get("total_runs"));
+                    bowlerDetails.put("total_runs",(bowlerDetails.get("total_runs"))+current_run);
                 }
 
                 bowlerMap.put(currentBowler,bowlerMap.get(currentBowler));
@@ -42,9 +42,20 @@ public class TopBowler {
             int total_run=bowlerMap.get(key).get("total_runs");
             int total_balls=bowlerMap.get(key).get("total_balls");
             double economyOfBowler=(double) total_run/ total_balls* 6;
-            System.out.println(key+" : "+economyOfBowler);
-//            System.out.println(key+" : "+value);
+
+            economyOfBowler= Double.valueOf(String.format("%.2f", economyOfBowler));
+
+            bowlerEconomy.put(key,economyOfBowler);
         });
+
+        List<Map.Entry<String, Double>> rankingList = new ArrayList<>(bowlerEconomy.entrySet());
+
+        Collections.sort(rankingList, Comparator.comparing(Map.Entry::getValue));
+
+        int rankingCount=1;
+        for (Map.Entry<String, Double> entry : rankingList) {
+            System.out.println((rankingCount++)+" "+entry.getKey() + " : " + entry.getValue());
+        }
 
     }
 }

@@ -38,7 +38,6 @@ public class Main {
                 break;
             default:
                 System.out.print("Invalid Number");
-
         }
     }
 }

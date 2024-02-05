@@ -1,6 +1,6 @@
 import java.util.HashMap;
 
-public class NumberOfMatches {
+public class NumberOfMatches{
     public void matchesPlayed(HashMap<Integer, HashMap<String,String>> matchesData){
 
         String year="";

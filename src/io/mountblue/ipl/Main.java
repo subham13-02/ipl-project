@@ -187,6 +187,24 @@ public class Main {
         }
     }
 
-
+    public static void findNumberOfMatchesWonByEachTeams(List<Match> matches){
+        HashMap<String,Integer> winnerMap =new HashMap<>();
+        for(int id=1; id<matches.size() ;id++){
+            String currentWinner=matches.get(id).getWinner();
+            int winCount;
+            if(winnerMap.containsKey(currentWinner)){
+                winCount=(winnerMap.get(currentWinner))+1;
+                winnerMap.put(currentWinner,winCount);
+            }else{
+                winnerMap.put(currentWinner,1);
+            }
+        }
+        for(String key : winnerMap.keySet()){
+            int value=winnerMap.get(key);
+            if(!key.isEmpty()){
+                System.out.println("Number of match own by team "+key+" : "+value);
+            }
+        }
+    }
 
 }

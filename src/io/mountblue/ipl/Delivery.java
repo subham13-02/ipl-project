@@ -1,7 +1,7 @@
 package io.mountblue.ipl;
 
 public class Delivery {
-    private String matchId;
+    private int matchId;
     private int inning;
     private String battingTeam;
     private String bowlingTeam;
@@ -23,11 +23,11 @@ public class Delivery {
     private String dismissalKind;
     private String fielder;
 
-    public String getMatchId() {
+    public int getMatchId() {
         return matchId;
     }
 
-    public void setMatchId(String matchId) {
+    public void setMatchId(int matchId) {
         this.matchId = matchId;
     }
 

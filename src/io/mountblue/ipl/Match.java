@@ -1,7 +1,7 @@
 package io.mountblue.ipl;
 
 public class Match {
-    private String matchId;
+    private int matchId;
     private int season;
     private String city;
     private String date;
@@ -20,11 +20,11 @@ public class Match {
     private String umpire2;
     private String umpire3;
 
-    public String getMatchId() {
+    public int getMatchId() {
         return matchId;
     }
 
-    public void setMatchId(String matchId) {
+    public void setMatchId(int matchId) {
         this.matchId = matchId;
     }
 

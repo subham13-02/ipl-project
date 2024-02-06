@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-
 public class Main {
     public static final int MATCH_ID = 0;
     public static final int SEASON = 1;
@@ -23,7 +22,6 @@ public class Main {
     public static final int UMPIRE1 = 15;
     public static final int UMPIRE2 = 16;
     public static final int UMPIRE3 = 17;
-
     public static final int INNING = 1;
     public static final int BATTING_TEAM = 2;
     public static final int BOWLING_TEAM = 3;
@@ -45,13 +43,9 @@ public class Main {
     public static final int DISMISSAL_KIND = 19;
     public static final int FIELDER = 20;
     public static void main(String[] args) {
-
         List<Match> matches = getMatchData();
         List<Delivery> deliveries = getDeliveryData();
 
-//        for(int i=0;i<deliveries.size();i++){
-//            System.out.println(deliveries.get(i) );
-//        }
         System.out.println("""
                 1.Number of matches played per year of all the years in IPL.
                 2.Number of matches won of all teams over all the years of IPL.
@@ -60,28 +54,30 @@ public class Main {
                 Enter the Question number you want to know...""");
         Scanner sc = new Scanner(System.in);
         int questionNumber = sc.nextInt();
-//        switch(questionNumber){
-//            case 1:
-//                findNumberOfMatchesPlayedPerYear(matches);
-//                break;
-//            case 2:
-//                findNumberOfMatchesWonByEachTeams(matches);
-//                break;
-//            case 3:
-//                String extraRunsInyear = "2016";
-//                findExtraRuns(delivery, match, extraRunsInyear);
-//                break;
-//            case 4:
-//                String topBowlerInyear = "2015";
-//                findTheMostEconomicalBowlerInYear(delivery, match, topBowlerInyear);
-//                break;
-//            default:
-//                System.out.print("Invalid Number");
-//        }
+        switch(questionNumber){
+            case 1:
+                findNumberOfMatchesPlayedPerYear(matches);
+                break;
+            case 2:
+                findNumberOfMatchesWonByEachTeams(matches);
+                break;
+            case 3:
+                int extraRunsInyear = 2016;
+                findExtraRunsConcededPerTeam(deliveries, matches, extraRunsInyear);
+                break;
+            case 4:
+                int topBowlerInyear = 2015;
+                findTheMostEconomicalBowlerInYear(deliveries, matches, topBowlerInyear);
+                break;
+            default:
+                System.out.print("Invalid Number");
+        }
     }
+
     public static List<Match> getMatchData(){
         List<Match> matches=new ArrayList<>();
         String filePath="src/io/mountblue/ipl/archive/matches.csv";
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line= reader.readLine();
@@ -121,6 +117,7 @@ public class Main {
     public static List<Delivery> getDeliveryData(){
         List<Delivery> deliveries=new ArrayList<>();
         String filePath="src/io/mountblue/ipl/archive/deliveries.csv";
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line= reader.readLine();
@@ -174,7 +171,6 @@ public class Main {
 
             }else {
                 matchesPlayedPerYear.put(year,matchesCount);
-                System.out.println("Total number matches played in year "+year+" : "+matchesCount);
                 year=matches.get(index).getSeason();
                 matchesCount=1;
             }
@@ -189,6 +185,7 @@ public class Main {
 
     public static void findNumberOfMatchesWonByEachTeams(List<Match> matches){
         HashMap<String,Integer> winnerMap =new HashMap<>();
+
         for(int id=1; id<matches.size() ;id++){
             String currentWinner=matches.get(id).getWinner();
             int winCount;
@@ -199,6 +196,7 @@ public class Main {
                 winnerMap.put(currentWinner,1);
             }
         }
+
         for(String key : winnerMap.keySet()){
             int value=winnerMap.get(key);
             if(!key.isEmpty()){
@@ -207,4 +205,104 @@ public class Main {
         }
     }
 
+    public static void findExtraRunsConcededPerTeam(List<Delivery> deliveries, List<Match>matches, int extraRunsInyear){
+        HashMap <String,Integer> extraRunPerTeam= new HashMap<>();
+        int[] matchIdRange= getMatchIdRange(extraRunsInyear, matches);
+        int startingId=matchIdRange[0];
+        int endingId=matchIdRange[1];
+
+        for(int index = 0 ; index < deliveries.size() ; index++) {
+            int currentId=deliveries.get(index).getMatchId();
+
+            if (currentId >= startingId && currentId<= endingId) {
+                String currentBowlingTeam=deliveries.get(index).getBowlingTeam();
+                int extraRun=deliveries.get(index).getExtraRuns();
+                if(!extraRunPerTeam.containsKey(currentBowlingTeam)){
+                    extraRunPerTeam.put(currentBowlingTeam,extraRun);
+                }else{
+                    extraRunPerTeam.put(currentBowlingTeam,extraRunPerTeam.get(currentBowlingTeam)+extraRun);
+                }
+            }
+        }
+
+        for(String key : extraRunPerTeam.keySet()){
+            int value=extraRunPerTeam.get(key);
+            if(!key.isEmpty()){
+                System.out.println("Extra Runs by " + key + " : " + value);
+            }
+        }
+    }
+
+    public static void findTheMostEconomicalBowlerInYear(List<Delivery> deliveries,List<Match> matches,int topBowlerInyear){
+        HashMap<String,HashMap<String,Integer>> mostEconomicalBowler=new HashMap<>();
+
+        int[] matchIdRange= getMatchIdRange(topBowlerInyear, matches);
+        int startingId=matchIdRange[0];
+        int endingId=matchIdRange[1];
+
+        for(int index=0;index<deliveries.size();index++){
+            int currentId=deliveries.get(index).getMatchId();
+
+            if (currentId >= startingId && currentId<= endingId) {
+                String currentBowler=deliveries.get(index).getBowler();
+                if(!mostEconomicalBowler.containsKey(currentBowler)){
+                    HashMap<String,Integer> bowlerDetails=new HashMap<>();
+                    bowlerDetails.put("total_balls",0);
+                    bowlerDetails.put("total_runs",0);
+                    mostEconomicalBowler.put(currentBowler,bowlerDetails);
+                }
+                if(mostEconomicalBowler.containsKey(currentBowler)){
+                    HashMap<String,Integer> bowlerDetails=mostEconomicalBowler.get(currentBowler);
+                    if(!(deliveries.get(index).getExtraRuns() == 0)){
+                        bowlerDetails.put("total_balls",(bowlerDetails.get("total_balls"))-1);
+                    }
+                    bowlerDetails.put("total_balls",(bowlerDetails.get("total_balls"))+1);
+
+                    int current_run=deliveries.get(index).getTotalRuns();
+                    bowlerDetails.put("total_runs",(bowlerDetails.get("total_runs"))+current_run);
+                }
+                mostEconomicalBowler.put(currentBowler,mostEconomicalBowler.get(currentBowler));
+            }
+        }
+        HashMap<String,Double> bowlerEconomy=new HashMap<>();
+
+        for(String key : mostEconomicalBowler.keySet()){
+            HashMap<String,Integer> value=mostEconomicalBowler.get(key);
+            int total_run=mostEconomicalBowler.get(key).get("total_runs");
+            int total_balls=mostEconomicalBowler.get(key).get("total_balls");
+            double economyOfBowler=(double) total_run/ total_balls* 6;
+
+            economyOfBowler= Double.valueOf(String.format("%.2f", economyOfBowler));
+            bowlerEconomy.put(key,economyOfBowler);
+        }
+
+        List<Map.Entry<String, Double>> rankingList = new ArrayList<>(bowlerEconomy.entrySet());
+        Collections.sort(rankingList, Comparator.comparing(Map.Entry::getValue));
+        int rankingCount=1;
+
+        for (int i = 0; i < rankingList.size(); i++) {
+            Map.Entry<String, Double> entry = rankingList.get(i);
+            String key = entry.getKey();
+            Double value = entry.getValue();
+            System.out.println((i + 1) + " " + key + " : " + value);
+        }
+    }
+    public static int[] getMatchIdRange(int year, List<Match> matches){
+        int startId=0;
+        int endId=0;
+        boolean flagStart=true;
+
+        for(int id=0 ; id< matches.size() ; id++){
+            int currentYear=matches.get(id).getSeason();
+
+            if(year == currentYear && flagStart){
+                startId=id;
+                flagStart=false;
+            }else if(year == currentYear){
+                endId=id;
+            }
+        }
+        int[] matchIds={++startId,++endId};
+        return matchIds;
+    }
 }

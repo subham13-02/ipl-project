@@ -46,32 +46,44 @@ public class Main {
         List<Match> matches = getMatchData();
         List<Delivery> deliveries = getDeliveryData();
 
-        System.out.println("""
-                1.Number of matches played per year of all the years in IPL.
-                2.Number of matches won of all teams over all the years of IPL.
-                3.For the year 2016 get the extra runs conceded per team.
-                4.For the year 2015 get the top economical bowlers.
-                Enter the Question number you want to know...""");
-        Scanner sc = new Scanner(System.in);
-        int questionNumber = sc.nextInt();
-        switch(questionNumber){
-            case 1:
-                findNumberOfMatchesPlayedPerYear(matches);
-                break;
-            case 2:
-                findNumberOfMatchesWonByEachTeams(matches);
-                break;
-            case 3:
-                int extraRunsInyear = 2016;
-                findExtraRunsConcededPerTeam(deliveries, matches, extraRunsInyear);
-                break;
-            case 4:
-                int topBowlerInyear = 2015;
-                findTheMostEconomicalBowlerInYear(deliveries, matches, topBowlerInyear);
-                break;
-            default:
-                System.out.print("Invalid Number");
-        }
+//        System.out.println("""
+//                1.Number of matches played per year of all the years in IPL.
+//                2.Number of matches won of all teams over all the years of IPL.
+//                3.For the year 2016 get the extra runs conceded per team.
+//                4.For the year 2015 get the top economical bowlers.
+//                5.For the match Id 1 get Second Highest wicket taker of each team.
+//                6.
+//                Enter the Question number you want to know...""");
+//        Scanner sc = new Scanner(System.in);
+//        String questionNumber = sc.next();
+
+//        switch(questionNumber){
+//            case "1":
+//                findNumberOfMatchesPlayedPerYear(matches);
+//                break;
+//            case "2":
+//                findNumberOfMatchesWonByEachTeams(matches);
+//                break;
+//            case "3":
+//                int extraRunsInyear = 2016;
+//                findExtraRunsConcededPerTeam(deliveries, matches, extraRunsInyear);
+//                break;
+//            case "4":
+//                int topBowlerInyear = 2015;
+//                findTheMostEconomicalBowlerInYear(deliveries, matches, topBowlerInyear);
+//                break;
+//            case "5":
+//                int matchIdNumber = 1;
+//                secondHighestWicketTakerOfEachTeam(deliveries,  matchIdNumber);
+//                break;
+//            case "6":
+//                findHighestWicketTakerPerTeamForEachSeason(deliveries ,matches);
+//                break;
+//            default:
+//                System.out.print("Invalid Number");
+//        }
+
+        findHeighestStrikeRateByVenue(deliveries,matches);
     }
 
     public static List<Match> getMatchData(){
@@ -278,7 +290,6 @@ public class Main {
 
         List<Map.Entry<String, Double>> rankingList = new ArrayList<>(bowlerEconomy.entrySet());
         Collections.sort(rankingList, Comparator.comparing(Map.Entry::getValue));
-        int rankingCount=1;
 
         for (int i = 0; i < rankingList.size(); i++) {
             Map.Entry<String, Double> entry = rankingList.get(i);
@@ -305,4 +316,149 @@ public class Main {
         int[] matchIds={++startId,++endId};
         return matchIds;
     }
+
+    public static void secondHighestWicketTakerOfEachTeam(List<Delivery> deliveries , int matchIdNumber){
+        HashMap<String,Integer> wicketTakersOfTeam1 = new HashMap<>();
+        HashMap<String,Integer> wicketTakersOfTeam2  = new HashMap<>();
+        String team1="";
+        String team2="";
+
+        for(int index=0;index < deliveries.size();index++) {
+            if (deliveries.get(index).getMatchId() == matchIdNumber && deliveries.get(index).getInning() == 1) {
+                team1=deliveries.get(index).getBowlingTeam();
+                if (deliveries.get(index).getPlayerDismissed() != "") {
+                    if(!wicketTakersOfTeam1.containsKey(deliveries.get(index).getBowler())){
+                        wicketTakersOfTeam1.put(deliveries.get(index).getBowler(),1);
+                    }else{
+                        wicketTakersOfTeam1.put(deliveries.get(index).getBowler(),(wicketTakersOfTeam1.get(deliveries.get(index).getBowler())+1));
+                    }
+                }
+            }
+            if (deliveries.get(index).getMatchId() == matchIdNumber && deliveries.get(index).getInning() == 2 ) {
+                team2=deliveries.get(index).getBowlingTeam();
+                if (deliveries.get(index).getPlayerDismissed() != "") {
+                    if (!wicketTakersOfTeam2.containsKey(deliveries.get(index).getBowler())) {
+                        wicketTakersOfTeam2.put(deliveries.get(index).getBowler(), 1);
+                    } else {
+                        wicketTakersOfTeam2.put(deliveries.get(index).getBowler(), (wicketTakersOfTeam2.get(deliveries.get(index).getBowler()) + 1));
+                    }
+                }
+            }
+        }
+        List<Map.Entry<String, Integer>> sortedWicketTakerOfTeam1 =wicketTakersOfTeam1.entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.<String, Integer>comparingByValue()))
+                .toList();
+        List<Map.Entry<String, Integer>> sortedWicketTakerOfTeam2 =wicketTakersOfTeam2.entrySet()
+                .stream()
+                .sorted(Collections.reverseOrder(Map.Entry.<String, Integer>comparingByValue()))
+                .toList();
+
+        if (sortedWicketTakerOfTeam1.get(2) != null) {
+            System.out.println("2nd Highest wicket Taker of Team " +team1+" is "+sortedWicketTakerOfTeam1.get(2));
+        }else{
+            System.out.println("There is no Second Wicket Taker");
+        }
+        if (sortedWicketTakerOfTeam1.get(2) != null) {
+            System.out.println("2nd Highest wicket Taker of Team " +team2+" is "+sortedWicketTakerOfTeam2.get(2));
+        }else {
+            System.out.println("There is no Second Wicket Taker");
+        }
+    }
+    public static void findHighestWicketTakerPerTeamForEachSeason(List<Delivery> deliveries ,List<Match> matches){
+        ArrayList<Integer> years= new ArrayList<>();
+
+        for(int i = 0; i < matches.size(); i++){
+            if(!years.contains(matches.get(i).getSeason())){
+                years.add(matches.get(i).getSeason());
+                findHighestWicketTakerPerTeamOfYear(deliveries,matches,matches.get(i).getSeason());
+            }
+        }
+    }
+    public static void findHighestWicketTakerPerTeamOfYear(List<Delivery> deliveries,List<Match> matches,int year){
+        HashSet<Integer> matchIds= new HashSet<>();
+
+        for(int j = 0; j < matches.size(); j++){
+            if(matches.get(j).getSeason()==year ){
+                matchIds.add(matches.get(j).getMatchId());
+            }
+        }
+        HashMap<String,HashMap<String,Integer>> wicketTakers= new HashMap<>();
+
+        for(int index = 0 ; index < deliveries.size() ; index++) {
+            int currentId=deliveries.get(index).getMatchId();
+
+            if (matchIds.contains(currentId) && !deliveries.get(index).getPlayerDismissed().equals("")) {
+                String currentTeam=deliveries.get(index).getBowlingTeam();
+                String currentBowler=deliveries.get(index).getBowler();
+                HashMap<String, Integer> bowlerDetails = new HashMap<>();
+
+                if(!wicketTakers.containsKey(currentTeam)){
+                    bowlerDetails.put(currentBowler, 1);
+                    wicketTakers.put(currentTeam,bowlerDetails);
+                }else {
+                    if(!wicketTakers.get(currentTeam).containsKey(currentBowler) ){
+                        bowlerDetails.putAll(wicketTakers.get(currentTeam));
+                        bowlerDetails.put(currentBowler, 1);
+                        wicketTakers.put(currentTeam,bowlerDetails);
+                    } else {
+                        bowlerDetails.putAll(wicketTakers.get(currentTeam));
+                        bowlerDetails.put(currentBowler, (wicketTakers.get(currentTeam).get(currentBowler))+1);
+                        wicketTakers.put(currentTeam,bowlerDetails);
+                    }
+                }
+            }
+        }
+        for(String wicketTaker : wicketTakers.keySet()){
+            HashMap<String,Integer> bowlerDetails=wicketTakers.get(wicketTaker);
+            List<Map.Entry<String, Integer>> sortedBowlerDetails= new ArrayList<>(bowlerDetails.entrySet());
+            Collections.sort(sortedBowlerDetails, Comparator.comparing(Map.Entry::getValue));
+            System.out.println(year+" : "+wicketTaker+" : "+sortedBowlerDetails.get(sortedBowlerDetails.size()-1));
+        }
+    }
+    public static  void findHeighestStrikeRateByVenue(List<Delivery> deliveries,List<Match> matches){
+        HashMap<Integer,String > matchVenue=new HashMap<>();
+       HashSet<Integer> matchIdsIn2015=new HashSet<>();
+
+        for(int index=0;index<matches.size();index++){
+            if(matches.get(index).getSeason()==2015){
+                matchVenue.put(matches.get(index).getMatchId(),matches.get(index).getVenue());
+                matchIdsIn2015.add(matches.get(index).getMatchId());
+          }
+        }
+        HashMap<String, HashMap<String ,Integer> >heighestStrikeRateByVenue=new HashMap<>();
+
+        for(int index=0;index<deliveries.size();index++) {
+            int currentMatchId = deliveries.get(index).getMatchId();
+
+            if (matchIdsIn2015.contains(currentMatchId)) {
+                String currentMatchVenue=matchVenue.get(currentMatchId);
+                String currentPlayer=deliveries.get(index).getBatsman();
+                int currentRun=deliveries.get(index).getTotalRuns();
+
+                HashMap<String,Integer> playerDetails=new HashMap<>();
+                if(!heighestStrikeRateByVenue.containsKey(currentMatchVenue)){
+                    playerDetails.put(currentPlayer,currentRun);
+                    heighestStrikeRateByVenue.put(currentMatchVenue,playerDetails);
+                }else{
+                    if(!heighestStrikeRateByVenue.get(currentMatchVenue).containsKey(currentPlayer)){
+                        playerDetails.putAll(heighestStrikeRateByVenue.get(currentPlayer));
+                        playerDetails.put(currentPlayer,currentRun);
+                        heighestStrikeRateByVenue.put(currentMatchVenue,playerDetails);
+                    }
+                    else{
+                        System.out.println(heighestStrikeRateByVenue.get(currentPlayer));
+                        playerDetails.putAll(heighestStrikeRateByVenue.get(currentPlayer));
+//                        playerDetails.put(currentPlayer,currentRun+(heighestStrikeRateByVenue.get(currentPlayer).get(currentPlayer)));
+                        heighestStrikeRateByVenue.put(currentMatchVenue,playerDetails);
+                    }
+                }
+            }
+        }
+        for(String key : heighestStrikeRateByVenue.keySet()){
+//            HashMap<String,<HashMap<String,Integer>> value=heighestStrikeRateByVenue.get(key);
+            System.out.println(key);
+        }
+    }
 }
+

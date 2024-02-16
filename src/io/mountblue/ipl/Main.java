@@ -1,49 +1,47 @@
 package io.mountblue.ipl;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 
 public class Main {
-    public static final int MATCH_ID = 0;
-    public static final int SEASON = 1;
-    public static final int CITY = 2;
-    public static final int DATE = 3;
-    public static final int TEAM1 = 4;
-    public static final int TEAM2 = 5;
-    public static final int TOSS_WINNER = 6;
-    public static final int TOSS_DECISION = 7;
-    public static final int RESULT = 8;
-    public static final int DL_APPLIED = 9;
-    public static final int WINNER = 10;
-    public static final int WIN_BY_RUNS = 11;
-    public static final int WIN_BY_WICKETS = 12;
-    public static final int PLAYER_OF_MATCH = 13;
-    public static final int VENUE = 14;
-    public static final int UMPIRE1 = 15;
-    public static final int UMPIRE2 = 16;
-    public static final int UMPIRE3 = 17;
-    public static final int INNING = 1;
-    public static final int BATTING_TEAM = 2;
-    public static final int BOWLING_TEAM = 3;
-    public static final int OVER = 4;
-    public static final int BALL = 5;
-    public static final int BATSMAN = 6;
-    public static final int NON_STRIKER = 7;
-    public static final int BOWLER = 8;
-    public static final int IS_SUPER_OVER = 9;
-    public static final int WIDE_RUNS = 10;
-    public static final int BYE_RUNS = 11;
-    public static final int LEG_BYE_RUNS = 12;
-    public static final int NO_BALL_RUNS = 13;
-    public static final int PENALTY_RUNS = 14;
-    public static final int BATSMAN_RUNS = 15;
-    public static final int EXTRA_RUNS = 16;
-    public static final int TOTAL_RUNS = 17;
-    public static final int PLAYER_DISMISSED = 18;
-    public static final int DISMISSAL_KIND = 19;
-    public static final int FIELDER = 20;
+    public static final int MATCH_ID = 1;
+    public static final int SEASON = 2;
+    public static final int CITY = 3;
+    public static final int DATE = 4;
+    public static final int TEAM1 = 5;
+    public static final int TEAM2 = 6;
+    public static final int TOSS_WINNER = 7;
+    public static final int TOSS_DECISION = 8;
+    public static final int RESULT = 9;
+    public static final int DL_APPLIED = 10;
+    public static final int WINNER = 11;
+    public static final int WIN_BY_RUNS = 12;
+    public static final int WIN_BY_WICKETS = 13;
+    public static final int PLAYER_OF_MATCH = 14;
+    public static final int VENUE = 15;
+    public static final int UMPIRE1 = 16;
+    public static final int UMPIRE2 = 17;
+    public static final int UMPIRE3 = 18;
+    public static final int INNING = 2;
+    public static final int BATTING_TEAM = 3;
+    public static final int BOWLING_TEAM = 4;
+    public static final int OVER = 5;
+    public static final int BALL = 6;
+    public static final int BATSMAN = 7;
+    public static final int NON_STRIKER = 8;
+    public static final int BOWLER = 9;
+    public static final int IS_SUPER_OVER = 10;
+    public static final int WIDE_RUNS = 11;
+    public static final int BYE_RUNS = 12;
+    public static final int LEG_BYE_RUNS = 13;
+    public static final int NO_BALL_RUNS = 14;
+    public static final int PENALTY_RUNS = 15;
+    public static final int BATSMAN_RUNS = 16;
+    public static final int EXTRA_RUNS = 17;
+    public static final int TOTAL_RUNS = 18;
+    public static final int PLAYER_DISMISSED = 19;
+    public static final int DISMISSAL_KIND = 20;
+    public static final int FIELDER = 21;
 
     public static void main(String[] args) {
         List<Match> matches = getMatchData();
@@ -56,7 +54,7 @@ public class Main {
                 4.For the year 2015 get the top economical bowlers.
                 5.For the match Id 1 get Second Highest wicket taker of each team.
                 6.For every year get highest wicket taker per team
-                7.For the year 2015 get heighest score by venue in 2015.
+                7.For the year 2015 get highest score by venue in 2015.
                 Enter the Question number you want to know...""");
         Scanner sc = new Scanner(System.in);
         String questionNumber = sc.next();
@@ -89,87 +87,94 @@ public class Main {
             default:
                 System.out.print("Invalid Number");
         }
-
-
     }
 
     public static List<Match> getMatchData() {
         List<Match> matches = new ArrayList<>();
-        String filePath = "src/io/mountblue/ipl/archive/matches.csv";
+        String sql = "SELECT * from matches";
+        String url = "jdbc:mysql://localhost:3306/ipl_project";
+        String username = "root";
+        String password = "Password@123";
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            String line = reader.readLine();
+            Connection connection = DriverManager.getConnection(url, username, password);
 
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",(?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)", -1);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
 
+            while (resultSet.next()) {
                 Match match = new Match();
-                match.setMatchId(Integer.parseInt(data[MATCH_ID]));
-                match.setSeason(Integer.parseInt(data[SEASON]));
-                match.setCity(data[CITY]);
-                match.setDate(data[DATE]);
-                match.setTeam1(data[TEAM1]);
-                match.setTeam2(data[TEAM2]);
-                match.setTossWinner(data[TOSS_WINNER]);
-                match.setTossDecision(data[TOSS_DECISION]);
-                match.setResult(data[RESULT]);
-                match.setDlApplied(Integer.parseInt(data[DL_APPLIED]));
-                match.setWinner(data[WINNER]);
-                match.setWinByRuns(Integer.parseInt(data[WIN_BY_RUNS]));
-                match.setWinByWickets(Integer.parseInt(data[WIN_BY_WICKETS]));
-                match.setPlayerOfMatch(data[PLAYER_OF_MATCH]);
-                match.setVenue(data[VENUE]);
-                match.setUmpire1(data[UMPIRE1]);
-                match.setUmpire2(data[UMPIRE2]);
-                match.setUmpire3(data[UMPIRE3]);
+
+                match.setMatchId(resultSet.getInt(MATCH_ID));
+                match.setSeason(resultSet.getInt(SEASON));
+                match.setCity(resultSet.getString(CITY));
+                match.setDate(resultSet.getString(DATE));
+                match.setTeam1(resultSet.getString(TEAM1));
+                match.setTeam2(resultSet.getString(TEAM2));
+                match.setTossWinner(resultSet.getString(TOSS_WINNER));
+                match.setTossDecision(resultSet.getString(TOSS_DECISION));
+                match.setResult(resultSet.getString(RESULT));
+                match.setDlApplied(resultSet.getInt(DL_APPLIED));
+                match.setWinner(resultSet.getString(WINNER));
+                match.setWinByRuns(resultSet.getInt(WIN_BY_RUNS));
+                match.setWinByWickets(resultSet.getInt(WIN_BY_WICKETS));
+                match.setPlayerOfMatch(resultSet.getString(PLAYER_OF_MATCH));
+                match.setVenue(resultSet.getString(VENUE));
+                match.setUmpire1(resultSet.getString(UMPIRE1));
+                match.setUmpire2(resultSet.getString(UMPIRE2));
+                match.setUmpire3(resultSet.getString(UMPIRE3));
 
                 matches.add(match);
             }
-        } catch (IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return matches;
     }
 
+
     public static List<Delivery> getDeliveryData() {
         List<Delivery> deliveries = new ArrayList<>();
-        String filePath = "src/io/mountblue/ipl/archive/deliveries.csv";
+        String sql = "SELECT * from deliveries";
+        String url = "jdbc:mysql://localhost:3306/ipl_project";
+        String username = "root";
+        String password = "Password@123";
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            String line = reader.readLine();
+            Connection connection = DriverManager.getConnection(url, username, password);
 
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",(?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)", -1);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
 
+            while (resultSet.next()) {
                 Delivery delivery = new Delivery();
-                delivery.setMatchId(Integer.parseInt(data[MATCH_ID]));
-                delivery.setInning(Integer.parseInt(data[INNING]));
-                delivery.setOver(Integer.parseInt(data[OVER]));
-                delivery.setBall(Integer.parseInt(data[BALL]));
-                delivery.setWideRuns(Integer.parseInt(data[WIDE_RUNS]));
-                delivery.setByeRuns(Integer.parseInt(data[BYE_RUNS]));
-                delivery.setLegByeRuns(Integer.parseInt(data[LEG_BYE_RUNS]));
-                delivery.setNoBallRuns(Integer.parseInt(data[NO_BALL_RUNS]));
-                delivery.setPenaltyRuns(Integer.parseInt(data[PENALTY_RUNS]));
-                delivery.setBatsmanRuns(Integer.parseInt(data[BATSMAN_RUNS]));
-                delivery.setExtraRuns(Integer.parseInt(data[EXTRA_RUNS]));
-                delivery.setTotalRuns(Integer.parseInt(data[TOTAL_RUNS]));
-                delivery.setSuperOver((data[IS_SUPER_OVER]).equals("1"));
-                delivery.setBattingTeam(data[BATTING_TEAM]);
-                delivery.setBowlingTeam(data[BOWLING_TEAM]);
-                delivery.setBatsman(data[BATSMAN]);
-                delivery.setNonStriker(data[NON_STRIKER]);
-                delivery.setBowler(data[BOWLER]);
-                delivery.setPlayerDismissed(data[PLAYER_DISMISSED]);
-                delivery.setDismissalKind(data[DISMISSAL_KIND]);
-                delivery.setFielder(data[FIELDER]);
+
+                delivery.setMatchId(resultSet.getInt(MATCH_ID));
+                delivery.setInning(resultSet.getInt(INNING));
+                delivery.setOver(resultSet.getInt(OVER));
+                delivery.setBall(resultSet.getInt(BALL));
+                delivery.setWideRuns(resultSet.getInt(WIDE_RUNS));
+                delivery.setByeRuns(resultSet.getInt(BYE_RUNS));
+                delivery.setLegByeRuns(resultSet.getInt(LEG_BYE_RUNS));
+                delivery.setNoBallRuns(resultSet.getInt(NO_BALL_RUNS));
+                delivery.setPenaltyRuns(resultSet.getInt(PENALTY_RUNS));
+                delivery.setBatsmanRuns(resultSet.getInt(BATSMAN_RUNS));
+                delivery.setExtraRuns(resultSet.getInt(EXTRA_RUNS));
+                delivery.setTotalRuns(resultSet.getInt(TOTAL_RUNS));
+                delivery.setSuperOver(resultSet.getBoolean(IS_SUPER_OVER));
+                delivery.setBattingTeam(resultSet.getString(BATTING_TEAM));
+                delivery.setBowlingTeam(resultSet.getString(BOWLING_TEAM));
+                delivery.setBatsman(resultSet.getString(BATSMAN));
+                delivery.setNonStriker(resultSet.getString(NON_STRIKER));
+                delivery.setBowler(resultSet.getString(BOWLER));
+                delivery.setPlayerDismissed(resultSet.getString(PLAYER_DISMISSED));
+                delivery.setDismissalKind(resultSet.getString(DISMISSAL_KIND));
+                delivery.setFielder(resultSet.getString(FIELDER));
 
                 deliveries.add(delivery);
             }
-        } catch (IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return deliveries;
